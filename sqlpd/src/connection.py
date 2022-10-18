@@ -156,7 +156,7 @@ class DataBase:
         )
         self.cursor = self.connection.cursor()
         self.util = DataBase.Functions(
-            self.connection, self.cursor, self.get_engine_url(), self.execute_query, self.disable_lock
+            self.connection, self.cursor, self.get_engine_url(), self.execute_query
         )
         return self
 
