@@ -158,7 +158,7 @@ class DataBase:
         )
         self.cursor = self.connection.cursor()
         self.util = DataBase.Functions(
-            self.connection, self.cursor, self.get_engine_url(), self.execute_query
+            self.connection, self.cursor, self.get_engine_url(), self.execute_query, self.n_jobs
         )
         return self
 
@@ -170,11 +170,12 @@ class DataBase:
         self.connection.close()
 
     class Functions:
-        def __init__(self, db, cursor, engine, execute) -> None:
+        def __init__(self, db, cursor, engine, execute, n_jobs) -> None:
             self.cursor = cursor
             self.db = db
             self.engine = engine
             self.execute = execute
+            self.n_jobs = n_jobs
 
         def get_table_schema(self, table_name):
             self.cursor.execute(f"DESCRIBE {table_name};")
