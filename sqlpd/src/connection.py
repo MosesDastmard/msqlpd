@@ -101,6 +101,7 @@ class DataBase:
         database: str = None,
         host: str = DEFAULT_HOST,
         port: int = DEFAULT_DATABASE_PORT,
+        n_jobs: int = PARALLEL_CONNECTIONS_NUMBER,
     ):
         """_summary_
 
@@ -116,6 +117,7 @@ class DataBase:
         self.password = password  # database password
         self.host = host  # database host IP
         self.port = port  # database port (e.g. 3306)
+        self.n_jobs = n_jobs # number of jobs
 
     def get_engine(self):
         """It generates engine of the corresponding connection
@@ -239,11 +241,11 @@ class DataBase:
             l_df = len(df)
             col_num = len(df.columns)
             if col_num < 10:
-                n_jobs = PARALLEL_CONNECTIONS_NUMBER*4
+                n_jobs = self.n_jobs*4
             elif col_num < 20:
-                n_jobs = PARALLEL_CONNECTIONS_NUMBER*2
+                n_jobs = self.n_jobs*2
             else:
-                n_jobs = PARALLEL_CONNECTIONS_NUMBER
+                n_jobs = self.n_jobs
             is_first_chunk = True
             jobs = []
             for chunk_index in range(0, l_df, chunk_size):
