@@ -155,6 +155,7 @@ class DataBase:
             user=self.username,
             password=self.password,
             database=self.database,
+            use_pure=True,
         )
         self.cursor = self.connection.cursor()
         self.util = DataBase.Functions(
