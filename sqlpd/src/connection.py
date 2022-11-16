@@ -23,7 +23,7 @@ Examples that Pandas fails to perform:
 import os
 from collections import OrderedDict
 
-import mysql.connector
+from .mysql import connector
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
@@ -149,7 +149,7 @@ class DataBase:
         return self.__enter__()
 
     def __enter__(self):
-        self.connection = mysql.connector.connect(
+        self.connection = connector.connect(
             host=self.host,
             port=self.port,
             user=self.username,
@@ -159,7 +159,7 @@ class DataBase:
         )
         self.cursor = self.connection.cursor()
         self.util = DataBase.Functions(
-            self.connection, self.cursor, self.get_engine_url(), self.execute_query, self.n_jobs
+            self.connection, self.cursor, self.execute_query, self.n_jobs
         )
         return self
 
@@ -171,10 +171,9 @@ class DataBase:
         self.connection.close()
 
     class Functions:
-        def __init__(self, db, cursor, engine, execute, n_jobs) -> None:
+        def __init__(self, db_conn, cursor, execute, n_jobs) -> None:
             self.cursor = cursor
-            self.db = db
-            self.engine = engine
+            self.db_conn = db_conn
             self.execute = execute
             self.n_jobs = n_jobs
 
@@ -256,13 +255,13 @@ class DataBase:
                     is_first_chunk = False
                     if not self.exists(table_name):
                         d.to_sql(
-                            name=table_name, con=self.engine, if_exists="replace", index=False
+                            name=table_name, con=self.db_conn, if_exists="replace", index=False
                         )
                     else:
                         jobs.append(
                                     delayed(d.to_sql)(
                                         name=table_name,
-                                        con=self.engine,
+                                        con=self.db_conn,
                                         if_exists="append",
                                         index=False,
                                     ))
@@ -270,7 +269,7 @@ class DataBase:
                     jobs.append(
                         delayed(d.to_sql)(
                             name=table_name,
-                            con=self.engine,
+                            con=self.db_conn,
                             if_exists="append",
                             index=False,
                         )
