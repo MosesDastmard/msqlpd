@@ -19,15 +19,13 @@ Examples that Pandas fails to perform:
   or if you have INT dtype in mariadb, pandas will read that as float when null value exists. Because Pandas does not support int (any primitive type) column with null values.
 """
 
-
 import os
 from collections import OrderedDict
-
-from .mysql import connector
+from sqlalchemy import create_engine
+from mysql import connector
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-from sqlalchemy import create_engine
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_DATABASE_PORT = 3306
@@ -130,7 +128,7 @@ class DataBase:
 
     def get_engine_url(self):
         engine_url = (
-            "mysql+mysqlconnector://"
+            "mysql+pymysql://"
             + self.username
             + ":"
             + self.password
@@ -139,6 +137,7 @@ class DataBase:
         )
         if self.database is not None:
             engine_url += "/" + self.database
+        # print(engine_url)
         return engine_url
 
     def execute_query(self, *args):
@@ -159,7 +158,7 @@ class DataBase:
         )
         self.cursor = self.connection.cursor()
         self.util = DataBase.Functions(
-            self.connection, self.cursor, self.execute_query, self.n_jobs
+            self.connection, self.cursor, self.get_engine_url(), self.execute_query, self.n_jobs
         )
         return self
 
@@ -171,9 +170,10 @@ class DataBase:
         self.connection.close()
 
     class Functions:
-        def __init__(self, db_conn, cursor, execute, n_jobs) -> None:
+        def __init__(self, db, cursor, engine, execute, n_jobs) -> None:
             self.cursor = cursor
-            self.db_conn = db_conn
+            self.db = db
+            self.engine = engine
             self.execute = execute
             self.n_jobs = n_jobs
 
@@ -255,13 +255,13 @@ class DataBase:
                     is_first_chunk = False
                     if not self.exists(table_name):
                         d.to_sql(
-                            name=table_name, con=self.db_conn, if_exists="replace", index=False
+                            name=table_name, con=self.engine, if_exists="replace", index=False
                         )
                     else:
                         jobs.append(
                                     delayed(d.to_sql)(
                                         name=table_name,
-                                        con=self.db_conn,
+                                        con=self.engine,
                                         if_exists="append",
                                         index=False,
                                     ))
@@ -269,7 +269,7 @@ class DataBase:
                     jobs.append(
                         delayed(d.to_sql)(
                             name=table_name,
-                            con=self.db_conn,
+                            con=self.engine,
                             if_exists="append",
                             index=False,
                         )
