@@ -2,7 +2,7 @@
 
 
 ```python
-from sqlpd import DataBase
+from msqlpd import DataBase
 ```
 
 

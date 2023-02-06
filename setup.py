@@ -6,8 +6,8 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(
-    name="sqlpd",
-    version="4.0.0",
+    name="msqlpd",
+    version="4.0.1",
     author="Moses Dastmard",
     description="return a path information",
     long_description=long_description,
