@@ -7,9 +7,14 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="msqlpd",
-    version="4.0.1",
+    version="4.0.2",
     author="Moses Dastmard",
     description="return a path information",
     long_description=long_description,
     long_description_content_type='text/markdown',
+    install_requires=[
+        'sqlalchemy',
+        'pandas',
+        'mysql-connector-python',
+    ]
 )
