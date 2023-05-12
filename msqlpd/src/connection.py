@@ -89,6 +89,8 @@ def convert_dtype_mariadb_to_pandas(dtype: str) -> str:
         return "float"
     if "text" in dtype:
         return "string"
+    if "decimal" in dtype:
+        return "float"
     raise Exception(f"dtype {dtype} is not implemented yet.")
 
 class DataBase:

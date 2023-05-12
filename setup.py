@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="msqlpd",
-    version="4.0.3",
+    version="4.0.4",
     author="Moses Dastmard",
     description="return a path information",
     long_description=long_description,
